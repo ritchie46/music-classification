@@ -1,9 +1,5 @@
 import requests
 import base64
-import os
-from pprint import pprint
-os.chdir('..')
-print(os.getcwd())
 
 
 class Connection:
