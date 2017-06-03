@@ -44,13 +44,32 @@ class Connection:
         :return: (dict)
         """
         return self.query_get("/v1/search/",
-                            {'q': "{}".format(track.replace(' ', '+')), "type": "track"})
+                            {'q': "{}".format(track.replace(' ', '+')), "type": ("track", "artist")})
 
-    def track_preview(self, track):
+    def track_preview(self, track, index=0):
         """
         Get a preview url of a track query.
         :param track: (str)
         :return: (str)
         """
-        return self.query_track(track)["tracks"]["items"][0]["preview_url"]
+        return self.query_track(track)["tracks"]["items"][index]["preview_url"]
+
+    def artist_track_preview(self, artist, track):
+        """
+        Get a preview url of a track query
+        :param artist: (str)
+        :param track: (str)
+        :return: (str)
+        """
+        artist = artist.lower()
+        q = self.query_track("{} - {}".format(artist, track))["tracks"]["items"]
+        for d in q:
+            if d["artists"][0]["name"].lower() == artist and d["preview_url"]:
+                return d["preview_url"]
+
+        # try again for partial match
+        for d in q:
+            if artist in d["artists"][0]["name"].lower() and d["preview_url"]:
+                return d["preview_url"]
+
 
